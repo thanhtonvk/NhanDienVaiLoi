@@ -21,7 +21,7 @@ class Classifier:
     def __init__(self, input_size=224, path='models/bestmodel.h5'):
         self.input_size = input_size
         self.path = path
-        self.model = tf.keras.models.load_model(self.path)
+        self.model = tf.keras.models.load_model(self.path,compile=False)
 
     def predict(self, image):
         image = preprocessing(image, input_size=self.input_size)

@@ -27,7 +27,7 @@ class ObjectDetecion:
         self.interpreter, self.input_details, self.output_details = load_model(
             model_path=self.model_path)
 
-    def detect(self, image, threshold=0.5):
+    def detect(self, image, threshold=0.3):
         img_width, img_height, _ = image.shape
         input_data = np.expand_dims(
             preprocessing(image, self.input_size), axis=0)

@@ -21,7 +21,7 @@ def load_model(model_path):
 
 
 class ObjectDetecion:
-    def __init__(self, input_size=640, model_path='models/best-fp16.tflite'):
+    def __init__(self, input_size=640, model_path='models/best-fp16 (1).tflite'):
         self.input_size = input_size
         self.model_path = model_path
         self.interpreter, self.input_details, self.output_details = load_model(
@@ -34,13 +34,19 @@ class ObjectDetecion:
 
         self.interpreter.set_tensor(self.input_details[0]['index'], input_data)
         self.interpreter.invoke()
-
         boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0]
         scores = self.interpreter.get_tensor(
             self.output_details[-1]['index'])[0]
+        labels = self.interpreter.get_tensor(
+            self.output_details[-2]['index'])[0]
 
         boxes = [
             boxes[i]
+            for i, score in enumerate(scores)
+            if score > threshold
+        ]
+        labels = [
+            labels[i]
             for i, score in enumerate(scores)
             if score > threshold
         ]
@@ -49,6 +55,7 @@ class ObjectDetecion:
             for i, score in enumerate(scores)
             if score > threshold
         ]
+        
 
         boxes = np.array(boxes)
         if len(boxes) > 0:
@@ -57,7 +64,9 @@ class ObjectDetecion:
             boxes[:, 1:2] *= img_width
             boxes[:, 2:3] *= img_height
             boxes[:, 3:4] *= img_width
-        return boxes,scores
+        labels =np.asarray(labels)
+        scores =np.asarray(scores)
+        return labels,boxes,scores
 
 
 if __name__ == '__main__':
